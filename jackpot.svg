@@ -1,0 +1,7 @@
+<svg width="120" height="120" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M16 3L29 14L16 29L3 14L16 3Z" fill="#22D67A" opacity="0.9"/>
+  <path d="M16 3L29 14L16 16.5L3 14L16 3Z" fill="#22D67A" opacity="0.55"/>
+  <path d="M16 3L9 14H23L16 3Z" fill="white" opacity="0.3"/>
+  <path d="M16 16.5L29 14L16 29Z" fill="#22D67A" opacity="0.45"/>
+  <path d="M16 16.5L3 14L16 29Z" fill="#22D67A" opacity="0.65"/>
+</svg>
