@@ -9,245 +9,694 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body,#root{width:100%;height:100%;overflow:hidden}
-</style>
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body,#root{width:100%;height:100%;overflow:hidden}</style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const{useState,useCallback,useRef,useEffect}=React;
 
-const THEMES={
-  obsidian:{"--bg":"#0B0D12","--bg-surface":"rgba(16,18,26,0.85)","--bg-elevated":"rgba(28,30,42,0.9)","--border":"rgba(255,255,255,0.08)","--border-subtle":"rgba(255,255,255,0.05)","--text-primary":"#E8E8EC","--text-secondary":"#8A8A9C","--text-muted":"#505068","--accent":"#22D67A","--accent-glow":"rgba(34,214,122,0.2)","--accent-soft":"rgba(34,214,122,0.1)","--danger":"#F04858","--danger-glow":"rgba(240,72,88,0.2)","--tile":"rgba(255,255,255,0.07)","--tile-hover":"rgba(255,255,255,0.12)","--tile-border":"rgba(255,255,255,0.1)","--bar-bg":"rgba(10,12,18,0.92)","--ring-track":"rgba(255,255,255,0.08)"},
-  ivory:{"--bg":"#EDEAE4","--bg-surface":"rgba(255,255,255,0.85)","--bg-elevated":"rgba(250,250,248,0.9)","--border":"rgba(0,0,0,0.08)","--border-subtle":"rgba(0,0,0,0.05)","--text-primary":"#1A1A1E","--text-secondary":"#6E6E78","--text-muted":"#A0A0A8","--accent":"#1A8C54","--accent-glow":"rgba(26,140,84,0.15)","--accent-soft":"rgba(26,140,84,0.08)","--danger":"#D43848","--danger-glow":"rgba(212,56,72,0.15)","--tile":"rgba(0,0,0,0.04)","--tile-hover":"rgba(0,0,0,0.08)","--tile-border":"rgba(0,0,0,0.08)","--bar-bg":"rgba(255,255,255,0.92)","--ring-track":"rgba(0,0,0,0.08)"},
-  midnight:{"--bg":"#080C18","--bg-surface":"rgba(14,22,44,0.85)","--bg-elevated":"rgba(22,32,56,0.9)","--border":"rgba(255,255,255,0.08)","--border-subtle":"rgba(255,255,255,0.05)","--text-primary":"#E0E4F0","--text-secondary":"#6880A8","--text-muted":"#3C5078","--accent":"#4C9EFF","--accent-glow":"rgba(76,158,255,0.2)","--accent-soft":"rgba(76,158,255,0.1)","--danger":"#FF5C6C","--danger-glow":"rgba(255,92,108,0.2)","--tile":"rgba(76,158,255,0.08)","--tile-hover":"rgba(76,158,255,0.15)","--tile-border":"rgba(76,158,255,0.12)","--bar-bg":"rgba(8,12,24,0.92)","--ring-track":"rgba(255,255,255,0.06)"},
+
+/* ═══════════════════ SHARED ═══════════════════ */
+const THEMES = {
+  obsidian:{"--bg":"#0B0D12","--bg-surface":"rgba(16,18,26,0.85)","--bg-elevated":"rgba(28,30,42,0.9)","--border":"rgba(255,255,255,0.08)","--border-subtle":"rgba(255,255,255,0.05)","--text-primary":"#E8E8EC","--text-secondary":"#8A8A9C","--text-muted":"#505068","--accent":"#22D67A","--accent-glow":"rgba(34,214,122,0.2)","--accent-soft":"rgba(34,214,122,0.1)","--danger":"#F04858","--danger-glow":"rgba(240,72,88,0.2)","--gold":"#FFD700","--gold-glow":"rgba(255,215,0,0.25)","--gold-soft":"rgba(255,215,0,0.08)","--tile":"rgba(255,255,255,0.07)","--tile-hover":"rgba(255,255,255,0.12)","--tile-border":"rgba(255,255,255,0.1)","--bar-bg":"rgba(10,12,18,0.92)","--ring-track":"rgba(255,255,255,0.08)"},
+  ivory:{"--bg":"#EDEAE4","--bg-surface":"rgba(255,255,255,0.85)","--bg-elevated":"rgba(250,250,248,0.9)","--border":"rgba(0,0,0,0.08)","--border-subtle":"rgba(0,0,0,0.05)","--text-primary":"#1A1A1E","--text-secondary":"#6E6E78","--text-muted":"#A0A0A8","--accent":"#1A8C54","--accent-glow":"rgba(26,140,84,0.15)","--accent-soft":"rgba(26,140,84,0.08)","--danger":"#D43848","--danger-glow":"rgba(212,56,72,0.15)","--gold":"#B8960F","--gold-glow":"rgba(184,150,15,0.2)","--gold-soft":"rgba(184,150,15,0.06)","--tile":"rgba(0,0,0,0.04)","--tile-hover":"rgba(0,0,0,0.08)","--tile-border":"rgba(0,0,0,0.08)","--bar-bg":"rgba(255,255,255,0.92)","--ring-track":"rgba(0,0,0,0.08)"},
+  midnight:{"--bg":"#080C18","--bg-surface":"rgba(14,22,44,0.85)","--bg-elevated":"rgba(22,32,56,0.9)","--border":"rgba(255,255,255,0.08)","--border-subtle":"rgba(255,255,255,0.05)","--text-primary":"#E0E4F0","--text-secondary":"#6880A8","--text-muted":"#3C5078","--accent":"#4C9EFF","--accent-glow":"rgba(76,158,255,0.2)","--accent-soft":"rgba(76,158,255,0.1)","--danger":"#FF5C6C","--danger-glow":"rgba(255,92,108,0.2)","--gold":"#FFD700","--gold-glow":"rgba(255,215,0,0.25)","--gold-soft":"rgba(255,215,0,0.08)","--tile":"rgba(76,158,255,0.08)","--tile-hover":"rgba(76,158,255,0.15)","--tile-border":"rgba(76,158,255,0.12)","--bar-bg":"rgba(8,12,24,0.92)","--ring-track":"rgba(255,255,255,0.06)"},
 };
 
-const TOTAL=25,MAX_MINES=24;
-function getMultiplier(m,r){if(r===0)return 1;let v=1;for(let i=0;i<r;i++)v*=(TOTAL-i)/(TOTAL-m-i);return v*0.97;}
-function placeMines(c){const p=new Set();while(p.size<c)p.add(Math.floor(Math.random()*TOTAL));return p;}
-function generatePreview(mines){const arr=Array(TOTAL).fill("gem");const pos=new Set();while(pos.size<mines)pos.add(Math.floor(Math.random()*TOTAL));pos.forEach(p=>{arr[p]="mine"});return arr;}
-function getRingColor(mines){const t=mines/MAX_MINES;if(t<=0.2)return"#4C9EFF";if(t<=0.35)return"#22D67A";if(t<=0.5)return"#8BD44A";if(t<=0.65)return"#F0A848";if(t<=0.8)return"#F06848";return"#F04858";}
+const MAX_MINES = 24;
+const TOWER_LEVELS = [
+  { level:1, mines:1, reward:0.5, color:"#4C9EFF" },
+  { level:2, mines:2, reward:1, color:"#22D67A" },
+  { level:3, mines:3, reward:2, color:"#8BD44A" },
+  { level:4, mines:4, reward:4, color:"#D4C44A" },
+  { level:5, mines:5, reward:8, color:"#F0A848" },
+  { level:6, mines:6, reward:20, color:"#F07848" },
+  { level:7, mines:7, reward:50, color:"#F04858" },
+  { level:8, mines:8, reward:150, color:"#E020A0" },
+];
 
-const GemIcon=({size=36})=>React.createElement("svg",{width:size,height:size,viewBox:"0 0 32 32",fill:"none"},
-  React.createElement("path",{d:"M16 3L29 14L16 29L3 14L16 3Z",fill:"var(--accent)",opacity:"0.9"}),
-  React.createElement("path",{d:"M16 3L29 14L16 16.5L3 14L16 3Z",fill:"var(--accent)",opacity:"0.55"}),
-  React.createElement("path",{d:"M16 3L9 14H23L16 3Z",fill:"white",opacity:"0.3"}),
-  React.createElement("path",{d:"M16 16.5L29 14L16 29Z",fill:"var(--accent)",opacity:"0.45"}),
-  React.createElement("path",{d:"M16 16.5L3 14L16 29Z",fill:"var(--accent)",opacity:"0.65"})
+function getRingColor(m) { const t = m / MAX_MINES; if (t <= 0.2) return "#4C9EFF"; if (t <= 0.35) return "#22D67A"; if (t <= 0.5) return "#8BD44A"; if (t <= 0.65) return "#F0A848"; if (t <= 0.8) return "#F06848"; return "#F04858"; }
+function getMultiplier(m, r) { if (r === 0) return 1; let v = 1; for (let i = 0; i < r; i++) v *= (25 - i) / (25 - m - i); return v * 0.97; }
+function placeMines25(c) { const p = new Set(); while (p.size < c) p.add(Math.floor(Math.random() * 25)); return p; }
+function placeMines9(c) { const p = new Set(); while (p.size < c) p.add(Math.floor(Math.random() * 9)); return p; }
+function generatePreview(mines) { const a = Array(25).fill("gem"); const p = new Set(); while (p.size < mines) p.add(Math.floor(Math.random() * 25)); p.forEach(i => { a[i] = "mine"; }); return a; }
+
+/* ─── Shared Icons ─── */
+const GemIcon = ({ size = 36 }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+    <path d="M16 3L29 14L16 29L3 14L16 3Z" fill="var(--accent)" opacity="0.9"/>
+    <path d="M16 3L29 14L16 16.5L3 14L16 3Z" fill="var(--accent)" opacity="0.55"/>
+    <path d="M16 3L9 14H23L16 3Z" fill="white" opacity="0.3"/>
+    <path d="M16 16.5L29 14L16 29Z" fill="var(--accent)" opacity="0.45"/>
+    <path d="M16 16.5L3 14L16 29Z" fill="var(--accent)" opacity="0.65"/>
+  </svg>
 );
-const MineIcon=({size=34})=>{
-  const lines=[[16,3,16,9],[16,23,16,29],[3,16,9,16],[23,16,29,16],[7,7,11,11],[21,7,25,11],[7,25,11,21],[21,25,25,21]];
-  return React.createElement("svg",{width:size,height:size,viewBox:"0 0 32 32",fill:"none"},
-    React.createElement("circle",{cx:16,cy:16,r:9,fill:"var(--danger)",opacity:"0.9"}),
-    React.createElement("circle",{cx:16,cy:16,r:5,fill:"var(--danger)",opacity:"0.45"}),
-    ...lines.map(([x1,y1,x2,y2],i)=>React.createElement("line",{key:i,x1,y1,x2,y2,stroke:"var(--danger)",strokeWidth:"2",strokeLinecap:"round"})),
-    React.createElement("circle",{cx:13,cy:13,r:2.5,fill:"white",opacity:"0.3"})
+
+const MineIcon = ({ size = 34 }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="9" fill="var(--danger)" opacity="0.9"/>
+    <circle cx="16" cy="16" r="5" fill="var(--danger)" opacity="0.45"/>
+    {[[16,3,16,9],[16,23,16,29],[3,16,9,16],[23,16,29,16],[7,7,11,11],[21,7,25,11],[7,25,11,21],[21,25,25,21]].map(([x1,y1,x2,y2],i) => (
+      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--danger)" strokeWidth="2" strokeLinecap="round"/>
+    ))}
+    <circle cx="13" cy="13" r="2.5" fill="white" opacity="0.3"/>
+  </svg>
+);
+
+const TrophyIcon = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <path d="M6 9H4a2 2 0 0 1-2-2V5h4M18 9h2a2 2 0 0 0 2-2V5h-4"/>
+    <path d="M6 2h12v7a6 6 0 0 1-12 0V2z"/><path d="M9 21h6M12 15v6"/>
+  </svg>
+);
+
+const SkullIcon = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <circle cx="12" cy="10" r="7"/><circle cx="9" cy="10" r="1.5" fill="currentColor"/><circle cx="15" cy="10" r="1.5" fill="currentColor"/>
+    <path d="M9 17v4M15 17v4M12 17v4"/><path d="M8 17h8"/>
+  </svg>
+);
+
+const ParticleBurst = ({ color, x, y, count = 12 }) => {
+  const pts = useRef(Array.from({ length: count }, (_, i) => ({
+    angle: (i / count) * 360 + Math.random() * 20,
+    dist: 20 + Math.random() * 40,
+    size: 2 + Math.random() * 4,
+    delay: Math.random() * 0.08,
+  }))).current;
+  return (
+    <div style={{ position: "absolute", left: x, top: y, pointerEvents: "none", zIndex: 50 }}>
+      {pts.map((p, i) => (
+        <div key={i} style={{
+          position: "absolute", width: p.size, height: p.size, borderRadius: "50%", background: color,
+          animation: `pFly 0.7s ${p.delay}s cubic-bezier(.25,.46,.45,.94) forwards`,
+          "--px": `${Math.cos(p.angle * Math.PI / 180) * p.dist}px`,
+          "--py": `${Math.sin(p.angle * Math.PI / 180) * p.dist}px`,
+          opacity: 0,
+        }}/>
+      ))}
+    </div>
   );
 };
 
-const ParticleBurst=({color,x,y})=>{
-  const pts=useRef(Array.from({length:12},(_,i)=>({angle:(i/12)*360+Math.random()*20,dist:20+Math.random()*40,size:2+Math.random()*4,delay:Math.random()*0.08}))).current;
-  return React.createElement("div",{style:{position:"absolute",left:x,top:y,pointerEvents:"none",zIndex:50}},
-    pts.map((p,i)=>React.createElement("div",{key:i,style:{position:"absolute",width:p.size,height:p.size,borderRadius:"50%",background:color,animation:`pFly 0.7s ${p.delay}s cubic-bezier(.25,.46,.45,.94) forwards`,"--px":`${Math.cos(p.angle*Math.PI/180)*p.dist}px`,"--py":`${Math.sin(p.angle*Math.PI/180)*p.dist}px`,opacity:0}}))
+/* ─── Ring Selector ─── */
+const RingSelector = ({ mines, setMines, disabled }) => {
+  const pct = mines / MAX_MINES;
+  const color = getRingColor(mines);
+  const R = 52, C = 2 * Math.PI * R;
+  const dashLen = C * pct, gapLen = C - dashLen;
+  const segLen = (C / 24) * 0.7, segGap = (C / 24) * 0.3;
+
+  const bS = (ok) => ({
+    width: 36, height: 36, borderRadius: "50%", border: "1.5px solid var(--border)",
+    background: "var(--tile)", color: "var(--text-secondary)", fontSize: 20, fontWeight: 700,
+    fontFamily: "'Outfit',sans-serif", cursor: disabled || !ok ? "not-allowed" : "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "all .15s ease", opacity: disabled || !ok ? 0.3 : 1,
+  });
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 14, background: "var(--bg-surface)", backdropFilter: "blur(16px)", border: "1px solid var(--border)", borderRadius: 16, padding: "14px 16px" }}>
+      <button onClick={() => !disabled && setMines(Math.max(1, mines - 1))} disabled={disabled || mines <= 1} style={bS(mines > 1)}>−</button>
+      <div style={{ position: "relative", width: 128, height: 128, flexShrink: 0 }}>
+        <svg width={128} height={128} viewBox="0 0 128 128" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx={64} cy={64} r={R} fill="none" stroke="var(--ring-track)" strokeWidth={7} strokeDasharray={`${segLen} ${segGap}`} strokeLinecap="round"/>
+          <circle cx={64} cy={64} r={R} fill="none" stroke={color} strokeWidth={7} strokeDasharray={`${dashLen} ${gapLen}`} strokeLinecap="round" style={{ transition: "stroke-dasharray 0.4s cubic-bezier(.34,1.56,.64,1), stroke 0.3s ease", filter: `drop-shadow(0 0 8px ${color}50)` }}/>
+        </svg>
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 36, fontWeight: 800, color, lineHeight: 1, transition: "color 0.3s ease", textShadow: `0 0 20px ${color}40` }}>{mines}</div>
+          <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 9, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 2 }}>mines</div>
+        </div>
+      </div>
+      <button onClick={() => !disabled && setMines(Math.min(MAX_MINES, mines + 1))} disabled={disabled || mines >= MAX_MINES} style={bS(mines < MAX_MINES)}>+</button>
+    </div>
   );
 };
 
-const RingSelector=({mines,setMines,disabled})=>{
-  const pct=mines/MAX_MINES;const color=getRingColor(mines);
-  const R=52,CX=64,CY=64,SW=7,C=2*Math.PI*R;
-  const dashLen=C*pct,gapLen=C-dashLen;
-  const segLen=(C/24)*0.7,segGap=(C/24)*0.3;
 
-  const btnStyle=(canClick)=>({width:36,height:36,borderRadius:"50%",border:"1.5px solid var(--border)",background:"var(--tile)",color:"var(--text-secondary)",fontSize:20,fontWeight:700,fontFamily:"'Outfit',sans-serif",cursor:disabled||!canClick?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s ease",opacity:disabled||!canClick?0.3:1});
+/* ═══════════════════ CLASSIC MODE ═══════════════════ */
+const ClassicMode = ({ balance, setBalance }) => {
+  const [mines, setMines] = useState(5);
+  const [bet, setBet] = useState(2);
+  const [gameState, setGameState] = useState("idle");
+  const [minePositions, setMinePositions] = useState(new Set());
+  const [revealed, setRevealed] = useState(new Set());
+  const [particles, setParticles] = useState([]);
+  const [shake, setShake] = useState(false);
+  const [preview, setPreview] = useState(() => generatePreview(5));
+  const [landedCols, setLandedCols] = useState(new Set([0,1,2,3,4]));
+  const gridRef = useRef(null);
+  const pid = useRef(0);
 
-  return React.createElement("div",{style:{display:"flex",alignItems:"center",gap:14,background:"var(--bg-surface)",backdropFilter:"blur(16px)",border:"1px solid var(--border)",borderRadius:16,padding:"14px 16px"}},
-    React.createElement("button",{onClick:()=>!disabled&&setMines(Math.max(1,mines-1)),disabled:disabled||mines<=1,style:btnStyle(mines>1)},"−"),
-    React.createElement("div",{style:{position:"relative",width:128,height:128,flexShrink:0}},
-      React.createElement("svg",{width:128,height:128,viewBox:"0 0 128 128",style:{transform:"rotate(-90deg)"}},
-        React.createElement("circle",{cx:CX,cy:CY,r:R,fill:"none",stroke:"var(--ring-track)",strokeWidth:SW,strokeDasharray:`${segLen} ${segGap}`,strokeLinecap:"round"}),
-        React.createElement("circle",{cx:CX,cy:CY,r:R,fill:"none",stroke:color,strokeWidth:SW,strokeDasharray:`${dashLen} ${gapLen}`,strokeLinecap:"round",style:{transition:"stroke-dasharray 0.4s cubic-bezier(.34,1.56,.64,1), stroke 0.3s ease",filter:`drop-shadow(0 0 8px ${color}50)`}})
-      ),
-      React.createElement("div",{style:{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}},
-        React.createElement("div",{style:{fontFamily:"'Outfit',sans-serif",fontSize:36,fontWeight:800,color,lineHeight:1,transition:"color 0.3s ease",textShadow:`0 0 20px ${color}40`}},mines),
-        React.createElement("div",{style:{fontFamily:"'Outfit',sans-serif",fontSize:9,fontWeight:600,color:"var(--text-muted)",textTransform:"uppercase",letterSpacing:"0.12em",marginTop:2}},"mines")
-      )
-    ),
-    React.createElement("button",{onClick:()=>!disabled&&setMines(Math.min(MAX_MINES,mines+1)),disabled:disabled||mines>=MAX_MINES,style:btnStyle(mines<MAX_MINES)},"+")
+  const safeTiles = 25 - mines;
+  const multiplier = getMultiplier(mines, revealed.size);
+  const profit = bet * multiplier - bet;
+
+  useEffect(() => { if (gameState === "idle") setPreview(generatePreview(mines)); }, [mines, gameState]);
+
+  const spawn = (color, idx) => {
+    if (!gridRef.current) return;
+    const t = gridRef.current.children[idx]; if (!t) return;
+    const r = t.getBoundingClientRect(), g = gridRef.current.getBoundingClientRect();
+    const id = pid.current++;
+    setParticles(p => [...p, { id, color, x: r.left - g.left + r.width / 2, y: r.top - g.top + r.height / 2 }]);
+    setTimeout(() => setParticles(p => p.filter(v => v.id !== id)), 900);
+  };
+
+  const startGame = useCallback(() => {
+    if (bet > balance || gameState !== "idle") return;
+    setBalance(b => b - bet);
+    setMinePositions(placeMines25(mines));
+    setRevealed(new Set()); setParticles([]); setLandedCols(new Set());
+    setGameState("transitioning");
+    for (let col = 0; col < 5; col++) {
+      setTimeout(() => {
+        setLandedCols(prev => { const n = new Set(prev); n.add(col); return n; });
+        if (col === 4) setTimeout(() => setGameState("active"), 300);
+      }, 250 + col * 150);
+    }
+  }, [bet, balance, mines, gameState]);
+
+  const clickTile = useCallback((idx) => {
+    if (gameState !== "active" || revealed.has(idx)) return;
+    if (minePositions.has(idx)) {
+      setRevealed(prev => new Set([...prev, idx]));
+      setGameState("lost"); setShake(true); setTimeout(() => setShake(false), 400);
+      spawn("var(--danger)", idx);
+    } else {
+      const next = new Set([...revealed, idx]); setRevealed(next);
+      spawn("var(--accent)", idx);
+      if (next.size === safeTiles) { setBalance(b => b + bet * getMultiplier(mines, next.size)); setGameState("won"); }
+    }
+  }, [gameState, revealed, minePositions, mines, safeTiles, bet]);
+
+  const cashout = useCallback(() => {
+    if (gameState !== "active" || revealed.size === 0) return;
+    setBalance(b => b + bet * multiplier); setGameState("won");
+  }, [gameState, revealed, bet, multiplier]);
+
+  const randomPick = useCallback(() => {
+    if (gameState !== "active") return;
+    const pool = []; for (let i = 0; i < 25; i++) { if (!revealed.has(i)) pool.push(i); }
+    if (pool.length) clickTile(pool[Math.floor(Math.random() * pool.length)]);
+  }, [gameState, revealed, clickTile]);
+
+  const reset = () => {
+    setGameState("idle"); setRevealed(new Set()); setMinePositions(new Set());
+    setParticles([]); setPreview(generatePreview(mines)); setLandedCols(new Set([0,1,2,3,4]));
+  };
+
+  const getTileState = (idx) => {
+    if (gameState === "lost" && minePositions.has(idx)) return "mine";
+    if (revealed.has(idx) && !minePositions.has(idx)) return "gem";
+    if (gameState === "won" && minePositions.has(idx)) return "mine-passive";
+    return "hidden";
+  };
+
+  const isP = gameState === "active", isI = gameState === "idle", isT = gameState === "transitioning", isE = gameState === "won" || gameState === "lost";
+
+  return (
+    <>
+      <div className="main">
+        <div className="left-panel"><RingSelector mines={mines} setMines={setMines} disabled={!isI}/></div>
+        {isP && revealed.size > 0 && (
+          <div className="multi-display">
+            <span className="multi-value">{multiplier.toFixed(2)}×</span>
+            <span className="multi-profit">+{profit.toFixed(2)}</span>
+          </div>
+        )}
+        <div className={`grid-wrap ${shake ? "shake" : ""}`}>
+          {particles.map(p => <ParticleBurst key={p.id} color={p.color} x={p.x} y={p.y}/>)}
+          <div className="grid5" ref={gridRef}>
+            {Array.from({ length: 25 }, (_, idx) => {
+              const col = idx % 5, row = Math.floor(idx / 5);
+              if (isI) {
+                const t = preview[idx];
+                return (
+                  <div key={`p${idx}-${mines}`} className={`tile5 dis prev ${t === "gem" ? "prev-gem" : "prev-mine"}`}>
+                    {t === "gem" ? <GemIcon size={32}/> : <MineIcon size={30}/>}
+                  </div>
+                );
+              }
+              if (isT) {
+                if (landedCols.has(col)) {
+                  return <div key={`e${idx}`} className="tile5 dis col-enter" style={{ animationDelay: `${row * 0.05}s` }}/>;
+                }
+                const t = preview[idx];
+                return (
+                  <div key={`x${idx}`} className={`tile5 dis col-exit ${t === "gem" ? "prev-gem" : "prev-mine"}`} style={{ animationDelay: `${row * 0.03}s` }}>
+                    {t === "gem" ? <GemIcon size={32}/> : <MineIcon size={30}/>}
+                  </div>
+                );
+              }
+              const st = getTileState(idx), hidden = st === "hidden", isGem = st === "gem", isMine = st === "mine", isMineP = st === "mine-passive";
+              return (
+                <div key={idx} className={`tile5 ${isGem ? "gem" : ""} ${isMine ? "mh" : ""} ${isMineP ? "mp" : ""} ${!isP || !hidden ? "dis" : ""}`} onClick={() => hidden && clickTile(idx)}>
+                  {isGem && <GemIcon/>}
+                  {(isMine || isMineP) && <MineIcon size={isMineP ? 26 : 34}/>}
+                </div>
+              );
+            })}
+          </div>
+          {isE && (
+            <div className="overlay">
+              <div className="ov-title" style={{ color: gameState === "won" ? "var(--accent)" : "var(--danger)" }}>{gameState === "won" ? "CASHED OUT" : "MINE HIT"}</div>
+              <div className="ov-sub" style={{ color: gameState === "won" ? "var(--accent)" : "var(--danger)" }}>{gameState === "won" ? `+${profit.toFixed(2)} (${multiplier.toFixed(2)}×)` : `-${bet.toFixed(2)}`}</div>
+              <button className="ov-btn" onClick={reset}>New Game</button>
+            </div>
+          )}
+        </div>
+        <div className="actions">
+          <button className="act-btn random" onClick={randomPick} disabled={!isP}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+            Random
+          </button>
+          <button className="act-btn cashout" onClick={cashout} disabled={!isP || revealed.size === 0}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Cashout
+          </button>
+        </div>
+      </div>
+      <div className="bottombar">
+        <div className="bb-section">
+          <div className="bb-group"><span className="bb-label">Credit</span><span className="bb-val">${balance.toFixed(2)}</span></div>
+          <div className="bb-divider"/>
+          <div className="bb-group"><span className="bb-label">Bet</span><span className="bb-val">${bet.toFixed(2)}</span></div>
+        </div>
+        <div className="bet-controls">
+          <button className="bet-btn" onClick={() => setBet(b => Math.max(.5, +(b / 2).toFixed(2)))} disabled={!isI}>−</button>
+          {isI ? (
+            <button className="play-btn" onClick={startGame} disabled={bet > balance}>
+              <svg width="24" height="24" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="var(--bg)"/></svg>
+            </button>
+          ) : (
+            <div className="live-badge">{isT ? "..." : "LIVE"}</div>
+          )}
+          <button className="bet-btn" onClick={() => setBet(b => Math.min(balance, +(b * 2).toFixed(2)))} disabled={!isI}>+</button>
+        </div>
+        <div className="bb-section" style={{ justifyContent: "flex-end" }}>
+          <div className="bb-group" style={{ textAlign: "right" }}><span className="bb-label">Next</span><span className="bb-val" style={{ color: "var(--text-secondary)" }}>{isP ? `${getMultiplier(mines, revealed.size + 1).toFixed(2)}×` : "—"}</span></div>
+          <div className="bb-divider"/>
+          <div className="bb-group" style={{ textAlign: "right" }}><span className="bb-label">Mines</span><span className="bb-val">{mines}</span></div>
+        </div>
+      </div>
+    </>
   );
 };
 
-function MinesGame(){
-  const[theme,setTheme]=useState("obsidian");
-  const[mines,setMines]=useState(5);
-  const[bet,setBet]=useState(2.00);
-  const[balance,setBalance]=useState(1000.00);
-  const[gameState,setGameState]=useState("idle");
-  const[minePositions,setMinePositions]=useState(new Set());
-  const[revealed,setRevealed]=useState(new Set());
-  const[particles,setParticles]=useState([]);
-  const[shake,setShake]=useState(false);
-  const[preview,setPreview]=useState(()=>generatePreview(5));
-  const[landedCols,setLandedCols]=useState(new Set([0,1,2,3,4]));
-  const gridRef=useRef(null);const pid=useRef(0);
-  const tokens=THEMES[theme];const safeTiles=TOTAL-mines;
-  const multiplier=getMultiplier(mines,revealed.size);const profit=bet*multiplier-bet;
 
-  useEffect(()=>{if(gameState==="idle")setPreview(generatePreview(mines));},[mines,gameState]);
+/* ═══════════════════ TOWER SIDEBAR ═══════════════════ */
+const TowerSidebar = ({ currentLevel, collectedRewards, gamePhase, bet }) => (
+  <div style={{ display: "flex", flexDirection: "column", background: "var(--bg-surface)", backdropFilter: "blur(16px)", border: "1px solid var(--border)", borderRadius: 16, padding: "12px 14px", width: 180 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "'Outfit',sans-serif", marginBottom: 10, textAlign: "center" }}>Tower</div>
+    <div style={{ display: "flex", flexDirection: "column-reverse", gap: 4 }}>
+      {TOWER_LEVELS.map(lv => {
+        const isCur = currentLevel === lv.level && (gamePhase === "playing" || gamePhase === "ready");
+        const isClr = collectedRewards.includes(lv.level);
+        const isFut = lv.level > currentLevel;
+        const isLost = gamePhase === "lost" && currentLevel === lv.level;
+        const amt = (lv.reward * bet).toFixed(2);
+        return (
+          <div key={lv.level} style={{
+            display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", borderRadius: 8,
+            background: isLost ? "var(--danger-glow)" : isCur ? `${lv.color}18` : isClr ? "var(--accent-soft)" : "transparent",
+            border: `1.5px solid ${isLost ? "var(--danger)" : isCur ? lv.color : isClr ? "var(--accent)" : "var(--border-subtle)"}`,
+            transition: "all 0.4s cubic-bezier(.34,1.56,.64,1)", opacity: isFut ? 0.3 : 1, transform: isCur ? "scale(1.03)" : "scale(1)",
+          }}>
+            <div style={{
+              width: 26, height: 26, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              background: isLost ? "var(--danger)" : isClr ? "var(--accent)" : isCur ? lv.color : "var(--bg)",
+              border: `1.5px solid ${isLost ? "var(--danger)" : isClr ? "var(--accent)" : isCur ? lv.color : "var(--border)"}`,
+              fontFamily: "'Outfit',sans-serif", fontSize: 11, fontWeight: 800,
+              color: (isClr || isCur || isLost) ? "var(--bg)" : "var(--text-muted)",
+              boxShadow: isCur ? `0 0 12px ${lv.color}40` : "none",
+            }}>
+              {isLost ? "✕" : isClr ? "✓" : lv.level}
+            </div>
+            <div style={{ flex: 1, fontSize: 10, fontWeight: 700, color: isLost ? "var(--danger)" : isCur ? lv.color : isClr ? "var(--accent)" : "var(--text-muted)", fontFamily: "'Outfit',sans-serif" }}>
+              {lv.mines} mine{lv.mines > 1 ? "s" : ""}
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, fontFamily: "'JetBrains Mono',monospace", color: isLost ? "var(--danger)" : isClr ? "var(--accent)" : isCur ? lv.color : "var(--text-muted)" }}>
+              {isClr ? `+${amt}` : amt}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
 
-  const spawn=(color,idx)=>{if(!gridRef.current)return;const t=gridRef.current.children[idx];if(!t)return;const r=t.getBoundingClientRect(),g=gridRef.current.getBoundingClientRect();const id=pid.current++;setParticles(p=>[...p,{id,color,x:r.left-g.left+r.width/2,y:r.top-g.top+r.height/2}]);setTimeout(()=>setParticles(p=>p.filter(v=>v.id!==id)),900);};
 
-  const startGame=useCallback(()=>{if(bet>balance||gameState!=="idle")return;setBalance(b=>b-bet);setMinePositions(placeMines(mines));setRevealed(new Set());setParticles([]);setLandedCols(new Set());setGameState("transitioning");for(let col=0;col<5;col++){setTimeout(()=>{setLandedCols(prev=>{const n=new Set(prev);n.add(col);return n;});if(col===4)setTimeout(()=>setGameState("active"),300);},250+col*150);}},[bet,balance,mines,gameState]);
+/* ═══════════════════ TOWER MODE ═══════════════════ */
+const TowerMode = ({ balance, setBalance }) => {
+  const [bet, setBet] = useState(2);
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [gamePhase, setGamePhase] = useState("idle");
+  const [minePositions, setMinePositions] = useState(new Set());
+  const [clickedTile, setClickedTile] = useState(null);
+  const [clickedResult, setClickedResult] = useState(null);
+  const [revealAll, setRevealAll] = useState(false);
+  const [collectedRewards, setCollectedRewards] = useState([]);
+  const [totalWon, setTotalWon] = useState(0);
+  const [particles, setParticles] = useState([]);
+  const [shake, setShake] = useState(false);
+  const gridRef = useRef(null);
+  const pid = useRef(0);
 
-  const clickTile=useCallback((idx)=>{if(gameState!=="active"||revealed.has(idx))return;if(minePositions.has(idx)){setRevealed(prev=>new Set([...prev,idx]));setGameState("lost");setShake(true);setTimeout(()=>setShake(false),400);spawn("var(--danger)",idx);}else{const next=new Set([...revealed,idx]);setRevealed(next);spawn("var(--accent)",idx);if(next.size===safeTiles){setBalance(b=>b+bet*getMultiplier(mines,next.size));setGameState("won");}}},[gameState,revealed,minePositions,mines,safeTiles,bet]);
+  const levelData = TOWER_LEVELS[currentLevel - 1];
+  const totalPossible = TOWER_LEVELS.reduce((s, l) => s + l.reward * bet, 0);
 
-  const cashout=useCallback(()=>{if(gameState!=="active"||revealed.size===0)return;setBalance(b=>b+bet*multiplier);setGameState("won");},[gameState,revealed,bet,multiplier]);
+  const spawn = (color, idx) => {
+    if (!gridRef.current) return;
+    const t = gridRef.current.children[idx]; if (!t) return;
+    const r = t.getBoundingClientRect(), g = gridRef.current.getBoundingClientRect();
+    const id = pid.current++;
+    setParticles(p => [...p, { id, color, x: r.left - g.left + r.width / 2, y: r.top - g.top + r.height / 2 }]);
+    setTimeout(() => setParticles(p => p.filter(v => v.id !== id)), 1000);
+  };
 
-  const randomPick=useCallback(()=>{if(gameState!=="active")return;const pool=[];for(let i=0;i<TOTAL;i++){if(!revealed.has(i))pool.push(i);}if(pool.length)clickTile(pool[Math.floor(Math.random()*pool.length)]);},[gameState,revealed,clickTile]);
+  const startCampaign = useCallback(() => {
+    if (bet > balance) return;
+    setBalance(b => b - bet); setCurrentLevel(1); setCollectedRewards([]); setTotalWon(0);
+    setClickedTile(null); setClickedResult(null); setRevealAll(false);
+    setMinePositions(placeMines9(TOWER_LEVELS[0].mines)); setGamePhase("ready");
+  }, [bet, balance]);
 
-  const reset=()=>{setGameState("idle");setRevealed(new Set());setMinePositions(new Set());setParticles([]);setPreview(generatePreview(mines));setLandedCols(new Set([0,1,2,3,4]));};
+  const setupLevel = useCallback((lvl) => {
+    setClickedTile(null); setClickedResult(null); setRevealAll(false);
+    setMinePositions(placeMines9(TOWER_LEVELS[lvl - 1].mines)); setGamePhase("ready");
+  }, []);
 
-  const getTileState=(idx)=>{if(gameState==="lost"&&minePositions.has(idx))return"mine";if(revealed.has(idx)&&!minePositions.has(idx))return"gem";if(gameState==="won"&&minePositions.has(idx))return"mine-passive";return"hidden";};
+  const clickTile = useCallback((idx) => {
+    if (gamePhase !== "ready" || clickedTile !== null) return;
+    setClickedTile(idx); setGamePhase("playing");
+    if (minePositions.has(idx)) {
+      setClickedResult("mine"); setShake(true); setTimeout(() => setShake(false), 400);
+      spawn("var(--danger)", idx);
+      setTimeout(() => { setRevealAll(true); setGamePhase("lost"); }, 600);
+    } else {
+      setClickedResult("gem"); spawn(levelData.color, idx);
+      const reward = +(levelData.reward * bet).toFixed(2);
+      setTimeout(() => {
+        setRevealAll(true);
+        setCollectedRewards(p => [...p, currentLevel]);
+        setTotalWon(p => +(p + reward).toFixed(2));
+        setBalance(b => +(b + reward).toFixed(2));
+        setGamePhase(currentLevel >= 8 ? "complete" : "won");
+      }, 500);
+    }
+  }, [gamePhase, clickedTile, minePositions, currentLevel, levelData, bet]);
 
-  const isPlayable=gameState==="active",isIdle=gameState==="idle",isTransitioning=gameState==="transitioning",isEnded=gameState==="won"||gameState==="lost";
+  const continueNext = useCallback(() => { const n = currentLevel + 1; setCurrentLevel(n); setupLevel(n); }, [currentLevel, setupLevel]);
+  const resetGame = () => {
+    setGamePhase("idle"); setCurrentLevel(1); setCollectedRewards([]); setTotalWon(0);
+    setClickedTile(null); setClickedResult(null); setRevealAll(false); setMinePositions(new Set()); setParticles([]);
+  };
 
-  const css=`:root{${Object.entries(tokens).map(([k,v])=>`${k}:${v}`).join(";")}}
-.game{width:100%;height:100vh;background:var(--bg);display:flex;flex-direction:column;font-family:'DM Sans',sans-serif;color:var(--text-primary);overflow:hidden;user-select:none}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;z-index:5}
-.logo{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.03em;text-align:center;flex:1}
-.logo span{color:var(--accent)}
-.themes{display:flex;gap:6px}
-.tdot{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s ease}
-.tdot:hover{transform:scale(1.2)}
-.tdot.a{border-color:var(--text-primary)}
-.main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:0 24px}
-.left-panel{position:absolute;left:24px;top:50%;transform:translateY(-50%);z-index:5}
-.actions{position:absolute;right:24px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:10px}
-.act-btn{width:80px;height:72px;border-radius:12px;border:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;transition:all .2s ease;backdrop-filter:blur(16px)}
-.act-btn.random{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
-.act-btn.random:hover{background:var(--accent-glow);transform:translateY(-2px);box-shadow:0 4px 16px var(--accent-glow)}
-.act-btn.cashout{background:rgba(240,168,72,0.1);border-color:rgba(240,168,72,0.4);color:#F0A848}
-.act-btn.cashout:hover{background:rgba(240,168,72,0.15);transform:translateY(-2px)}
-.act-btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:none!important}
-.multi-display{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:baseline;gap:8px;background:var(--bg-surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:8px 20px}
-.multi-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--accent)}
-.multi-profit{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);opacity:0.7}
-.grid-wrap{position:relative;border-radius:16px;padding:4px;transition:transform 0.1s ease}
-.grid-wrap.shake{animation:shk 0.4s ease}
-.grid{display:grid;grid-template-columns:repeat(5,88px);grid-template-rows:repeat(5,88px);gap:8px;position:relative;z-index:2}
-.tile{width:88px;height:88px;background:var(--tile);border:1.5px solid var(--tile-border);border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:background .2s ease,border-color .2s ease,box-shadow .2s ease}
-.tile::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.04));border-radius:inherit;pointer-events:none}
-.tile:hover:not(.dis){background:var(--tile-hover);border-color:rgba(255,255,255,0.15);transform:translateY(-3px) scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,0.25);transition:all .15s cubic-bezier(.4,0,.2,1)}
-.tile.dis{cursor:default}.tile.dis:hover{transform:none;box-shadow:none}
-.tile.gem{background:var(--accent-soft);border-color:var(--accent);box-shadow:0 0 24px var(--accent-glow),inset 0 0 24px var(--accent-glow);animation:gemR .5s cubic-bezier(.17,.67,.29,1.53)}
-.tile.mh{background:var(--danger-glow);border-color:var(--danger);box-shadow:0 0 28px var(--danger-glow),0 0 56px var(--danger-glow);animation:mR .35s ease-out}
-.tile.mp{background:var(--bg-elevated);border-color:var(--border);opacity:.4;animation:fI .4s ease}
-.tile.prev{cursor:default}
-.tile.prev-gem{background:var(--accent-soft);border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow),inset 0 0 12px var(--accent-glow)}
-.tile.prev-mine{background:var(--danger-glow);border-color:var(--danger);box-shadow:0 0 12px var(--danger-glow),inset 0 0 12px var(--danger-glow)}
-.tile.col-exit{animation:colExit 0.3s cubic-bezier(.55,.06,.68,.19) forwards}
-.tile.col-enter{animation:colEnter 0.4s cubic-bezier(.22,1,.36,1) both}
-@keyframes colExit{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(100px)}}
-@keyframes colEnter{0%{opacity:0;transform:translateY(-80px)}70%{opacity:1;transform:translateY(3px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes gemR{0%{transform:scale(0) rotateY(180deg);opacity:0}40%{transform:scale(1.15) rotateY(0);opacity:1}70%{transform:scale(0.95)}100%{transform:scale(1)}}
-@keyframes mR{0%{transform:scale(0) rotate(-10deg);opacity:0}50%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-@keyframes fI{from{opacity:0;transform:scale(.85)}to{opacity:.4;transform:scale(1)}}
-@keyframes shk{0%,100%{transform:translate(0)}15%{transform:translate(-4px,2px)}30%{transform:translate(4px,-2px)}45%{transform:translate(-3px,3px)}60%{transform:translate(3px,-1px)}75%{transform:translate(-2px,1px)}}
-@keyframes pFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0);opacity:0}}
-.overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;animation:oI .3s ease}
-@keyframes oI{from{opacity:0}to{opacity:1}}
-.ov-title{font-family:'Outfit',sans-serif;font-size:34px;font-weight:800;letter-spacing:-0.02em}
-.ov-sub{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600}
-.ov-btn{margin-top:10px;padding:12px 40px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s ease}
-.ov-btn:hover{background:var(--tile-hover);transform:translateY(-1px)}
-.bottombar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--bar-bg);backdrop-filter:blur(16px);border-top:1px solid var(--border);z-index:5}
-.bb-section{display:flex;align-items:center;gap:16px}
-.bb-group{display:flex;flex-direction:column;gap:1px}
-.bb-label{font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-family:'Outfit',sans-serif}
-.bb-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--text-primary)}
-.bb-divider{width:1px;height:28px;background:var(--border)}
-.bet-controls{display:flex;align-items:center;gap:6px}
-.bet-btn{width:36px;height:36px;border-radius:50%;background:var(--tile);border:1px solid var(--border);color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease}
-.bet-btn:hover{background:var(--tile-hover);color:var(--text-primary);border-color:var(--accent)}
-.bet-btn:disabled{opacity:.3;cursor:not-allowed}
-.play-btn{width:56px;height:56px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 20px var(--accent-glow)}
-.play-btn:hover{transform:scale(1.08);box-shadow:0 0 30px var(--accent-glow)}
-.play-btn:active{transform:scale(0.95)}
-.play-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
-.play-btn svg{fill:var(--bg)}
-.live-badge{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent)}`;
+  const isActive = gamePhase === "ready";
 
-  const e=React.createElement;
-  const shuffleIcon=e("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.2,strokeLinecap:"round"},e("polyline",{points:"16 3 21 3 21 8"}),e("line",{x1:4,y1:20,x2:21,y2:3}),e("polyline",{points:"21 16 21 21 16 21"}),e("line",{x1:15,y1:15,x2:21,y2:21}),e("line",{x1:4,y1:4,x2:9,y2:9}));
-  const dollarIcon=e("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2.2,strokeLinecap:"round"},e("path",{d:"M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"}));
-  const playIcon=e("svg",{width:24,height:24,viewBox:"0 0 24 24"},e("polygon",{points:"6 3 20 12 6 21 6 3",fill:"var(--bg)"}));
+  /* Idle screen */
+  if (gamePhase === "idle") {
+    return (
+      <>
+        <div className="main">
+          <div className="t-idle">
+            <div className="t-idle-title">Climb the<br/><span>Tower</span></div>
+            <div className="t-idle-sub">8 levels. Each level adds a mine to a 3×3 grid. One click per level — find a gem to advance, hit a mine and lose your stake.</div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
+              {TOWER_LEVELS.map(lv => (
+                <div key={lv.level} style={{ padding: "4px 10px", borderRadius: 6, fontFamily: "'JetBrains Mono',monospace", fontSize: 11, fontWeight: 600, color: lv.color, background: `${lv.color}10`, border: `1px solid ${lv.color}40` }}>
+                  Lv{lv.level}: {lv.reward}×
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="bottombar">
+          <div className="bb-section">
+            <div className="bb-group"><span className="bb-label">Balance</span><span className="bb-val">${balance.toFixed(2)}</span></div>
+            <div className="bb-divider"/>
+            <div className="bb-group"><span className="bb-label">Bet</span><span className="bb-val">${bet.toFixed(2)}</span></div>
+          </div>
+          <div className="bet-controls">
+            <button className="bet-btn" onClick={() => setBet(b => Math.max(.5, +(b / 2).toFixed(2)))}>−</button>
+            <button className="play-btn" onClick={startCampaign} disabled={bet > balance} style={{ padding: "0 24px", gap: 8 }}>
+              <TrophyIcon size={18}/> Start Tower
+            </button>
+            <button className="bet-btn" onClick={() => setBet(b => Math.min(balance, +(b * 2).toFixed(2)))}>+</button>
+          </div>
+          <div className="bb-section" style={{ justifyContent: "flex-end" }}>
+            <div className="bb-group" style={{ textAlign: "right" }}><span className="bb-label">Max Win</span><span className="bb-val" style={{ color: "var(--gold)" }}>${totalPossible.toFixed(2)}</span></div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
-  return e(React.Fragment,null,
-    e("style",null,css),
-    e("div",{className:"game"},
-      // Top bar
-      e("div",{className:"topbar"},
-        e("div",{style:{width:60}}),
-        e("div",{className:"logo"},"M",e("span",null,"I"),"NES"),
-        e("div",{className:"themes"},
-          Object.entries({obsidian:"#0B0D12",ivory:"#EDEAE4",midnight:"#080C18"}).map(([k,c])=>
-            e("div",{key:k,className:`tdot ${theme===k?"a":""}`,style:{background:c,border:k==="ivory"?"2px solid #bbb":undefined},onClick:()=>setTheme(k)})
-          )
-        )
-      ),
-      // Main
-      e("div",{className:"main"},
-        e("div",{className:"left-panel"},e(RingSelector,{mines,setMines,disabled:!isIdle})),
-        isPlayable&&revealed.size>0&&e("div",{className:"multi-display"},e("span",{className:"multi-value"},multiplier.toFixed(2)+"×"),e("span",{className:"multi-profit"},"+"+profit.toFixed(2))),
-        // Grid
-        e("div",{className:`grid-wrap ${shake?"shake":""}`},
-          particles.map(p=>e(ParticleBurst,{key:p.id,...p})),
-          e("div",{className:"grid",ref:gridRef},
-            Array.from({length:TOTAL},(_,idx)=>{
-              const col=idx%5,row=Math.floor(idx/5);
-              if(isIdle){const type=preview[idx];return e("div",{key:`p${idx}-${mines}`,className:`tile dis prev ${type==="gem"?"prev-gem":"prev-mine"}`},type==="gem"?e(GemIcon,{size:32}):e(MineIcon,{size:30}));}
-              if(isTransitioning){const landed=landedCols.has(col);if(landed)return e("div",{key:`e${idx}`,className:"tile dis col-enter",style:{animationDelay:`${row*0.05}s`}});const type=preview[idx];return e("div",{key:`x${idx}`,className:`tile dis col-exit ${type==="gem"?"prev-gem":"prev-mine"}`,style:{animationDelay:`${row*0.03}s`}},type==="gem"?e(GemIcon,{size:32}):e(MineIcon,{size:30}));}
-              const st=getTileState(idx),hidden=st==="hidden",isGem=st==="gem",isMine=st==="mine",isMineP=st==="mine-passive";
-              return e("div",{key:idx,className:`tile ${isGem?"gem":""} ${isMine?"mh":""} ${isMineP?"mp":""} ${!isPlayable||!hidden?"dis":""}`,onClick:()=>hidden&&clickTile(idx)},isGem&&e(GemIcon),(isMine||isMineP)&&e(MineIcon,{size:isMineP?26:34}));
-            })
-          ),
-          isEnded&&e("div",{className:"overlay"},
-            e("div",{className:"ov-title",style:{color:gameState==="won"?"var(--accent)":"var(--danger)"}},gameState==="won"?"CASHED OUT":"MINE HIT"),
-            e("div",{className:"ov-sub",style:{color:gameState==="won"?"var(--accent)":"var(--danger)"}},gameState==="won"?`+${profit.toFixed(2)} (${multiplier.toFixed(2)}×)`:`-${bet.toFixed(2)}`),
-            e("button",{className:"ov-btn",onClick:reset},"New Game")
-          )
-        ),
-        // Actions
-        e("div",{className:"actions"},
-          e("button",{className:"act-btn random",onClick:randomPick,disabled:!isPlayable},shuffleIcon,"Random"),
-          e("button",{className:"act-btn cashout",onClick:cashout,disabled:!isPlayable||revealed.size===0},dollarIcon,"Cashout")
-        )
-      ),
-      // Bottom bar
-      e("div",{className:"bottombar"},
-        e("div",{className:"bb-section"},
-          e("div",{className:"bb-group"},e("span",{className:"bb-label"},"Credit"),e("span",{className:"bb-val"},"$"+balance.toFixed(2))),
-          e("div",{className:"bb-divider"}),
-          e("div",{className:"bb-group"},e("span",{className:"bb-label"},"Bet"),e("span",{className:"bb-val"},"$"+bet.toFixed(2)))
-        ),
-        e("div",{className:"bet-controls"},
-          e("button",{className:"bet-btn",onClick:()=>setBet(b=>Math.max(.5,+(b/2).toFixed(2))),disabled:!isIdle},"−"),
-          isIdle?e("button",{className:"play-btn",onClick:startGame,disabled:bet>balance},playIcon):e("div",{className:"live-badge"},isTransitioning?"...":"LIVE"),
-          e("button",{className:"bet-btn",onClick:()=>setBet(b=>Math.min(balance,+(b*2).toFixed(2))),disabled:!isIdle},"+")
-        ),
-        e("div",{className:"bb-section",style:{justifyContent:"flex-end"}},
-          e("div",{className:"bb-group",style:{textAlign:"right"}},e("span",{className:"bb-label"},"Next"),e("span",{className:"bb-val",style:{color:"var(--text-secondary)"}},isPlayable?getMultiplier(mines,revealed.size+1).toFixed(2)+"×":"—")),
-          e("div",{className:"bb-divider"}),
-          e("div",{className:"bb-group",style:{textAlign:"right"}},e("span",{className:"bb-label"},"Mines"),e("span",{className:"bb-val"},mines))
-        )
-      )
-    )
+  /* Game screen */
+  return (
+    <>
+      <div className="main">
+        <TowerSidebar currentLevel={currentLevel} collectedRewards={collectedRewards} gamePhase={gamePhase} bet={bet}/>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "'Outfit',sans-serif", fontSize: 14, fontWeight: 700, padding: "8px 20px", borderRadius: 10, background: "var(--bg-surface)", border: "1px solid var(--border)", backdropFilter: "blur(16px)" }}>
+            <span style={{ color: "var(--text-muted)" }}>Level</span>
+            <span style={{ fontSize: 18, fontWeight: 800, color: levelData.color }}>{currentLevel}</span>
+            <span style={{ color: "var(--text-muted)", fontSize: 12 }}>•</span>
+            <span style={{ fontSize: 12, color: "var(--danger)" }}>{levelData.mines} mine{levelData.mines > 1 ? "s" : ""}</span>
+            <span style={{ color: "var(--text-muted)", fontSize: 12 }}>•</span>
+            <span style={{ fontSize: 12, color: levelData.color, fontFamily: "'JetBrains Mono',monospace", fontWeight: 700 }}>+{(levelData.reward * bet).toFixed(2)}</span>
+          </div>
+          <div className={`grid-wrap ${shake ? "shake" : ""}`}>
+            {particles.map(p => <ParticleBurst key={p.id} color={p.color} x={p.x} y={p.y} count={16}/>)}
+            <div className="grid3" ref={gridRef}>
+              {Array.from({ length: 9 }, (_, idx) => {
+                const isMine = minePositions.has(idx);
+                const isClicked = clickedTile === idx;
+                const show = isClicked || revealAll;
+                let cls = "tile3";
+                if (!isActive && !show) cls += " dis";
+                if (isClicked && clickedResult === "gem") cls += " gem";
+                if (isClicked && clickedResult === "mine") cls += " mine-hit";
+                if (revealAll && !isClicked && isMine) cls += " mine-reveal dis";
+                if (revealAll && !isClicked && !isMine) cls += " safe-reveal dis";
+                if (!show && !isActive) cls += " dis";
+                return (
+                  <div key={`${currentLevel}-${idx}`} className={cls} onClick={() => isActive && clickTile(idx)}>
+                    {show && isMine && <MineIcon size={isClicked ? 38 : 28}/>}
+                    {show && !isMine && <GemIcon size={isClicked ? 40 : 28}/>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {isActive && (
+            <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>
+              Pick a tile — {9 - levelData.mines} safe, {levelData.mines} mine{levelData.mines > 1 ? "s" : ""}
+            </div>
+          )}
+        </div>
+        <div style={{ width: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {gamePhase === "won" && (
+            <div className="result-panel">
+              <div className="rp-title" style={{ color: levelData.color }}>Level {currentLevel} Clear!</div>
+              <div className="rp-amount" style={{ color: "var(--accent)" }}>+{(levelData.reward * bet).toFixed(2)}</div>
+              <div className="rp-sub">Total earned: ${totalWon.toFixed(2)}</div>
+              <button className="c-btn primary" onClick={continueNext}>Next Level →</button>
+              <button className="c-btn secondary" onClick={() => setGamePhase("cashout")}>Cash Out ${totalWon.toFixed(2)}</button>
+            </div>
+          )}
+          {gamePhase === "lost" && (
+            <div className="result-panel">
+              <div className="rp-title" style={{ color: "var(--danger)" }}>Game Over</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--danger)" }}>
+                <SkullIcon size={20}/><span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 16, fontWeight: 700 }}>-${bet.toFixed(2)}</span>
+              </div>
+              <div className="rp-sub">{totalWon > 0 ? `You kept $${totalWon.toFixed(2)}` : "Stake lost"}</div>
+              <button className="c-btn danger" onClick={resetGame}>Try Again</button>
+            </div>
+          )}
+          {gamePhase === "complete" && (
+            <div className="result-panel">
+              <div style={{ fontSize: 32 }}>🏆</div>
+              <div className="rp-title" style={{ color: "var(--gold)" }}>Tower Complete!</div>
+              <div className="rp-amount" style={{ color: "var(--gold)" }}>${totalWon.toFixed(2)}</div>
+              <button className="c-btn gold" onClick={resetGame}>Play Again</button>
+            </div>
+          )}
+          {gamePhase === "cashout" && (
+            <div className="result-panel">
+              <div className="rp-title" style={{ color: "var(--accent)" }}>Cashed Out</div>
+              <div className="rp-amount" style={{ color: "var(--accent)" }}>${totalWon.toFixed(2)}</div>
+              <button className="c-btn primary" onClick={resetGame}>Play Again</button>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="bottombar">
+        <div className="bb-section">
+          <div className="bb-group"><span className="bb-label">Balance</span><span className="bb-val">${balance.toFixed(2)}</span></div>
+          <div className="bb-divider"/>
+          <div className="bb-group"><span className="bb-label">Stake</span><span className="bb-val">${bet.toFixed(2)}</span></div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="bb-group" style={{ textAlign: "center" }}>
+            <span className="bb-label">Won</span>
+            <span className="bb-val" style={{ color: totalWon > 0 ? "var(--accent)" : "var(--text-primary)" }}>${totalWon.toFixed(2)}</span>
+          </div>
+        </div>
+        <div className="bb-section" style={{ justifyContent: "flex-end" }}>
+          <div className="bb-group" style={{ textAlign: "right" }}><span className="bb-label">Level</span><span className="bb-val" style={{ color: levelData.color }}>{currentLevel}/8</span></div>
+          <div className="bb-divider"/>
+          <div className="bb-group" style={{ textAlign: "right" }}><span className="bb-label">Reward</span><span className="bb-val" style={{ color: levelData.color }}>{levelData.reward}×</span></div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+
+/* ═══════════════════ ROOT APP ═══════════════════ */
+function MinesApp() {
+  const [mode, setMode] = useState("classic");
+  const [balance, setBalance] = useState(1000.00);
+  const [theme, setTheme] = useState("obsidian");
+  const tokens = THEMES[theme];
+
+  const css = `
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{${Object.entries(tokens).map(([k, v]) => `${k}:${v}`).join(";")}}
+
+    .app{width:100%;height:100vh;background:var(--bg);display:flex;flex-direction:column;font-family:'DM Sans',sans-serif;color:var(--text-primary);overflow:hidden;user-select:none}
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;z-index:5}
+    .logo{font-family:'Outfit',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.03em}
+    .logo span{color:var(--accent)}
+    .mode-toggle{display:flex;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:3px;backdrop-filter:blur(16px)}
+    .mode-btn{padding:8px 20px;border-radius:8px;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;gap:6px;background:transparent;color:var(--text-muted)}
+    .mode-btn.active{background:var(--accent);color:var(--bg);box-shadow:0 2px 12px var(--accent-glow)}
+    .mode-btn.tower-active{background:var(--gold);color:#1a1a1e;box-shadow:0 2px 12px var(--gold-glow)}
+    .themes{display:flex;gap:6px}
+    .tdot{width:14px;height:14px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s ease}
+    .tdot:hover{transform:scale(1.2)}
+    .tdot.a{border-color:var(--text-primary)}
+
+    .main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:0 24px}
+    .left-panel{position:absolute;left:24px;top:50%;transform:translateY(-50%);z-index:5}
+    .actions{position:absolute;right:24px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:10px}
+    .act-btn{width:80px;height:72px;border-radius:12px;border:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;transition:all .2s ease;backdrop-filter:blur(16px)}
+    .act-btn.random{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+    .act-btn.random:hover{background:var(--accent-glow);transform:translateY(-2px);box-shadow:0 4px 16px var(--accent-glow)}
+    .act-btn.cashout{background:rgba(240,168,72,0.1);border-color:rgba(240,168,72,0.4);color:#F0A848}
+    .act-btn.cashout:hover{background:rgba(240,168,72,0.15);transform:translateY(-2px)}
+    .act-btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+    .multi-display{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:baseline;gap:8px;background:var(--bg-surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:8px 20px}
+    .multi-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--accent)}
+    .multi-profit{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);opacity:0.7}
+
+    .grid-wrap{position:relative;border-radius:16px;padding:4px;transition:transform 0.1s ease}
+    .grid-wrap.shake{animation:shk 0.4s ease}
+    .grid5{display:grid;grid-template-columns:repeat(5,88px);grid-template-rows:repeat(5,88px);gap:8px;position:relative;z-index:2}
+    .grid3{display:grid;grid-template-columns:repeat(3,100px);grid-template-rows:repeat(3,100px);gap:10px;position:relative;z-index:2}
+
+    .tile5,.tile3{background:var(--tile);border:1.5px solid var(--tile-border);border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:background .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .tile5{width:88px;height:88px}
+    .tile3{width:100px;height:100px;border-width:2px;border-radius:14px}
+    .tile5::before,.tile3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.04));border-radius:inherit;pointer-events:none}
+    .tile5:hover:not(.dis),.tile3:hover:not(.dis){background:var(--tile-hover);border-color:rgba(255,255,255,0.15);transform:translateY(-3px) scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,0.25);transition:all .15s cubic-bezier(.4,0,.2,1)}
+    .dis{cursor:default!important}.dis:hover{transform:none!important;box-shadow:none!important}
+
+    .gem{background:var(--accent-soft)!important;border-color:var(--accent)!important;box-shadow:0 0 24px var(--accent-glow),inset 0 0 24px var(--accent-glow)!important;animation:gemR .5s cubic-bezier(.17,.67,.29,1.53)}
+    .mh,.mine-hit{background:var(--danger-glow)!important;border-color:var(--danger)!important;box-shadow:0 0 28px var(--danger-glow),0 0 56px var(--danger-glow)!important;animation:mR .35s ease-out}
+    .mp{background:var(--bg-elevated)!important;border-color:var(--border)!important;opacity:.4;animation:fI .4s ease}
+    .mine-reveal{background:var(--danger-glow)!important;border-color:var(--danger)!important;opacity:.5;animation:fI .4s ease}
+    .safe-reveal{background:var(--accent-soft)!important;border-color:var(--accent)!important;opacity:.4;animation:fI .4s ease}
+    .prev-gem{background:var(--accent-soft)!important;border-color:var(--accent)!important;box-shadow:0 0 12px var(--accent-glow),inset 0 0 12px var(--accent-glow)!important}
+    .prev-mine{background:var(--danger-glow)!important;border-color:var(--danger)!important;box-shadow:0 0 12px var(--danger-glow),inset 0 0 12px var(--danger-glow)!important}
+    .col-exit{animation:colExit 0.3s cubic-bezier(.55,.06,.68,.19) forwards}
+    .col-enter{animation:colEnter 0.4s cubic-bezier(.22,1,.36,1) both}
+
+    @keyframes colExit{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(100px)}}
+    @keyframes colEnter{0%{opacity:0;transform:translateY(-80px)}70%{opacity:1;transform:translateY(3px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes gemR{0%{transform:scale(0) rotateY(180deg);opacity:0}40%{transform:scale(1.15) rotateY(0);opacity:1}70%{transform:scale(0.95)}100%{transform:scale(1)}}
+    @keyframes mR{0%{transform:scale(0) rotate(-10deg);opacity:0}50%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+    @keyframes fI{from{opacity:0;transform:scale(.85)}to{opacity:.5;transform:scale(1)}}
+    @keyframes shk{0%,100%{transform:translate(0)}15%{transform:translate(-4px,2px)}30%{transform:translate(4px,-2px)}45%{transform:translate(-3px,3px)}60%{transform:translate(3px,-1px)}75%{transform:translate(-2px,1px)}}
+    @keyframes pFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0);opacity:0}}
+
+    .overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;animation:oI .3s ease}
+    @keyframes oI{from{opacity:0}to{opacity:1}}
+    .ov-title{font-family:'Outfit',sans-serif;font-size:34px;font-weight:800;letter-spacing:-0.02em}
+    .ov-sub{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600}
+    .ov-btn{margin-top:10px;padding:12px 40px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s ease}
+    .ov-btn:hover{background:var(--tile-hover);transform:translateY(-1px)}
+
+    .bottombar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--bar-bg);backdrop-filter:blur(16px);border-top:1px solid var(--border);z-index:5}
+    .bb-section{display:flex;align-items:center;gap:16px}
+    .bb-group{display:flex;flex-direction:column;gap:1px}
+    .bb-label{font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-family:'Outfit',sans-serif}
+    .bb-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--text-primary)}
+    .bb-divider{width:1px;height:28px;background:var(--border)}
+    .bet-controls{display:flex;align-items:center;gap:6px}
+    .bet-btn{width:36px;height:36px;border-radius:50%;background:var(--tile);border:1px solid var(--border);color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease}
+    .bet-btn:hover{background:var(--tile-hover);color:var(--text-primary);border-color:var(--accent)}
+    .bet-btn:disabled{opacity:.3;cursor:not-allowed}
+    .play-btn{height:48px;padding:0 28px;border-radius:24px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 20px var(--accent-glow);font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--bg)}
+    .play-btn:hover{transform:scale(1.05);box-shadow:0 0 30px var(--accent-glow)}
+    .play-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+    .live-badge{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent)}
+
+    .t-idle{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+    .t-idle-title{font-family:'Outfit',sans-serif;font-size:42px;font-weight:800;letter-spacing:-0.03em;line-height:1.1;color:var(--text-primary)}
+    .t-idle-title span{color:var(--gold)}
+    .t-idle-sub{font-size:14px;color:var(--text-secondary);max-width:340px;line-height:1.5}
+
+    .result-panel{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;background:var(--bg-surface);border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(16px);min-width:200px;animation:slideUp 0.4s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes slideUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+    .rp-title{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.02em}
+    .rp-amount{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700}
+    .rp-sub{font-size:12px;color:var(--text-secondary)}
+    .c-btn{padding:10px 24px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s ease;width:100%;text-align:center}
+    .c-btn:hover{transform:translateY(-2px)}
+    .c-btn.primary{background:var(--accent);color:var(--bg);box-shadow:0 4px 16px var(--accent-glow)}
+    .c-btn.secondary{background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border)}
+    .c-btn.gold{background:var(--gold);color:#1a1a1e;box-shadow:0 4px 16px var(--gold-glow)}
+    .c-btn.danger{background:var(--bg-elevated);color:var(--danger);border:1px solid var(--danger)}
+  `;
+
+  return (
+    <>
+      <style>{css}</style>
+      <div className="app">
+        <div className="topbar">
+          <div className="logo">M<span>I</span>NES</div>
+          <div className="mode-toggle">
+            <button className={`mode-btn ${mode === "classic" ? "active" : ""}`} onClick={() => setMode("classic")}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+              Classic
+            </button>
+            <button className={`mode-btn ${mode === "tower" ? "tower-active" : ""}`} onClick={() => setMode("tower")}>
+              <TrophyIcon size={14}/>
+              Tower
+            </button>
+          </div>
+          <div className="themes">
+            {Object.entries({ obsidian: "#0B0D12", ivory: "#EDEAE4", midnight: "#080C18" }).map(([k, c]) => (
+              <div key={k} className={`tdot ${theme === k ? "a" : ""}`} style={{ background: c, border: k === "ivory" ? "2px solid #bbb" : undefined }} onClick={() => setTheme(k)}/>
+            ))}
+          </div>
+        </div>
+        {mode === "classic"
+          ? <ClassicMode balance={balance} setBalance={setBalance}/>
+          : <TowerMode balance={balance} setBalance={setBalance}/>
+        }
+      </div>
+    </>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(MinesGame));
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(MinesApp));
 </script>
 </body>
 </html>
